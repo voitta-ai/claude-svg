@@ -9,8 +9,8 @@ Create stunning diagrams, architecture visualizations, and professional graphics
 ### AWS Architecture Diagram
 ![AWS Architecture Diagram](./examples/aws-architecture.svg)
 
-### Viral Meme Recreation - Chill Guy (2024)
-![Chill Guy Meme](./examples/chill-guy-meme.svg)
+### Viral Meme Recreation - This is Fine
+![This is Fine Meme](./examples/this-is-fine-meme.svg)
 
 ### LinkedIn Banner
 ![LinkedIn Banner Example](./examples/example-linkedin-banner.svg)
