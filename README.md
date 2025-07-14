@@ -1,10 +1,13 @@
-# Claude SVG Creator
+# Claude Diagram Creator
 
-Create stunning SVG visualizations instantly with Claude Code. Just describe what you want, and Claude generates professional graphics.
+Create stunning diagrams, architecture visualizations, and professional graphics instantly with Claude Code. Just describe what you want, and Claude generates beautiful, presentation-ready visuals.
 
-**⚡ Requires [Claude Code](https://claude.ai/code) - This workflow is designed specifically for Claude's AI coding assistant.**
+**⚡ Requires [Claude Code](https://claude.ai/code) - This workflow creates professional diagrams and visualizations, not just simple SVGs.**
 
-## Examples
+## What You Can Create
+
+### AWS Architecture Diagram
+![AWS Architecture Diagram](./examples/aws-architecture.svg)
 
 ### LinkedIn Banner
 ![LinkedIn Banner Example](./examples/example-linkedin-banner.svg)
@@ -17,68 +20,67 @@ Create stunning SVG visualizations instantly with Claude Code. Just describe wha
 
 ## Creating Your Own
 
-Simply ask Claude to create an SVG visualization:
+Simply ask Claude to create any diagram or visualization:
 
 ```
-"Create an SVG showing my AWS architecture with load balancers and databases"
-```
-
-```
-"Make a LinkedIn banner for a machine learning engineer"
+"Create an AWS architecture diagram with load balancers, Lambda, and RDS"
 ```
 
 ```
 "Design a flowchart showing user authentication flow"
 ```
 
-Claude will generate an SVG file and save it with a descriptive name.
+```
+"Make a network topology diagram for my data center"
+```
+
+```
+"Create a beautiful LinkedIn banner for a DevOps engineer"
+```
+
+Claude will generate a high-quality diagram and save it with a descriptive name.
 
 ## Getting Started with Claude Code
 
 1. **Install Claude Code** from [claude.ai/code](https://claude.ai/code)
 2. **Clone this repository** to your working directory
-3. **Ask Claude** to create any visualization you need
-4. **Find your SVG** in the project directory
+3. **Ask Claude** to create any diagram you need
+4. **Find your diagram** in the project directory
 
-## How It Works
+## What Makes This Special
 
-The workflow includes:
-- `visualization-template.html` - A reusable template with export controls
-- `CLAUDE.md` - Instructions that help Claude create better visualizations
-- `.gitignore` - Keeps your workspace clean
-
-When you ask for a visualization, Claude:
-1. Creates the SVG content
-2. Uses the template for consistent export options
-3. Saves everything with clear naming
+- **Professional Quality** - Not just basic SVGs, but presentation-ready diagrams
+- **Smart Layouts** - Claude automatically arranges elements for clarity
+- **Beautiful Styling** - Gradients, shadows, animations, and modern design
+- **Export Ready** - Use the HTML template to export as PNG, JPEG, or WebP
+- **Customizable** - Request specific colors, styles, or branding
 
 ## Tips for Best Results
 
-- **Be specific** - "Create a network diagram showing 3 servers connected to a database"
-- **Mention the purpose** - "for a LinkedIn post" or "for a presentation"
-- **Request modifications** - "Make the colors more vibrant" or "Add animation"
-- **Specify dimensions** - "1200x600 for a blog header"
+- **Be specific** - "AWS diagram with API Gateway, Lambda, and DynamoDB in separate VPC subnets"
+- **Mention the purpose** - "for a presentation" or "for documentation"
+- **Request styles** - "Make it minimal" or "Use blue and green colors"
+- **Specify type** - "architecture diagram", "flowchart", "network topology"
 
 ## Troubleshooting
 
-**Claude not creating visualizations?**
+**Claude not creating diagrams?**
 - Make sure you're using Claude Code (not regular Claude)
-- Mention "SVG" or "visualization" in your request
+- Mention "diagram" or "visualization" in your request
 
-**Can't find the file?**
-- Check your current working directory
-- Files are named descriptively (e.g., `aws-architecture.svg`)
-
-**Need to export as PNG/JPEG?**
+**Need different formats?**
 - Open the generated HTML file in a browser
-- Use the export controls to download in any format
+- Use the export controls for PNG/JPEG/WebP
+
+**Want to modify?**
+- Ask Claude to update: "Make the boxes larger" or "Change to dark theme"
 
 ## Contributing
 
 This workflow is designed for Claude Code users. Contributions welcome:
-- Better templates
+- New diagram templates
+- Style improvements
 - More examples
-- Documentation improvements
 
 Submit issues and PRs on GitHub.
 
@@ -88,4 +90,4 @@ MIT License - Free to use and modify
 
 ---
 
-**Made for Claude Code** - The AI-powered way to create professional visualizations
+**Made for Claude Code** - Professional diagrams and visualizations in seconds
