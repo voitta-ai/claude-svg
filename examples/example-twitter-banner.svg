@@ -19,6 +19,11 @@
             <stop offset="0%" style="stop-color:rgba(255,255,255,0.3)"/>
             <stop offset="100%" style="stop-color:transparent"/>
         </linearGradient>
+        
+        <linearGradient id="textGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffffff"/>
+            <stop offset="100%" style="stop-color:#e0e0e0"/>
+        </linearGradient>
     </defs>
     
     <!-- Background -->
@@ -46,10 +51,19 @@
     
     <!-- Left section - Text content -->
     <g transform="translate(80, 60)">
+        <!-- Add subtle shadow for better contrast -->
+        <text x="2" y="122" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="rgba(0,0,0,0.5)">
+            Building Peak
+        </text>
         <text x="0" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="white">
             Building Peak
         </text>
-        <text x="0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="url(#highlightGradient)">
+        
+        <!-- AI Agents with enhanced visibility -->
+        <text x="2" y="182" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="rgba(0,0,0,0.5)">
+            AI Agents
+        </text>
+        <text x="0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="url(#textGradient)" stroke="white" stroke-width="1">
             AI Agents
         </text>
         
@@ -65,7 +79,7 @@
     <!-- Right section - Agent grid -->
     <g transform="translate(900, 110)" opacity="1">
         <!-- Subtle dark background for better contrast -->
-        <rect x="-20" y="-20" width="320" height="320" rx="16" fill="rgba(0,0,0,0.2)" />
+        <rect x="-20" y="-20" width="320" height="320" rx="16" fill="rgba(0,0,0,0.3)" />
         <!-- Connection lines -->
         <line x1="100" y1="40" x2="160" y2="40" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
         <line x1="180" y1="40" x2="240" y2="40" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>

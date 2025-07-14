@@ -62,6 +62,20 @@ Claude will generate a high-quality diagram and save it with a descriptive name.
 - **Request styles** - "Make it minimal" or "Use blue and green colors"
 - **Specify type** - "architecture diagram", "flowchart", "network topology"
 
+### Talk to Claude Like a Designer
+
+Claude can handle specific design instructions just like you'd give to a human designer:
+
+- "Move the Lambda function 2 inches to the right"
+- "Make the database icon 50% larger"
+- "Add more space between the load balancer and the servers"
+- "Move the title down a bit, it's too close to the edge"
+- "The connection lines are overlapping, route them around the services"
+- "Make the AWS logo smaller and put it in the corner"
+- "The text is hard to read, make it white with a dark background"
+
+Don't hesitate to iterate - Claude will remember the context and make precise adjustments!
+
 ## Troubleshooting
 
 **Claude not creating diagrams?**
