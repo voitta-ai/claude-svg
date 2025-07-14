@@ -217,17 +217,17 @@
         <path d="M880,600 L1050,600" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- Lambda to S3 (top of Lambda to left of S3) -->
-        <path d="M800,290 L800,200 L1230,200 L1230,520 L1260,520" stroke="#7AA116"/>
-        <path d="M800,290 L800,200 L1230,200 L1230,520 L1260,520" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        <path d="M800,290 L800,250 L1230,250 L1230,520 L1260,520" stroke="#7AA116"/>
+        <path d="M800,290 L800,250 L1230,250 L1230,520 L1260,520" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- Lambda to NAT (top right of Lambda to left of NAT) -->
         <path d="M880,330 L1230,330 L1230,330 L1260,330" stroke="#4B93D9" stroke-dasharray="5 5">
             <animate attributeName="stroke-dashoffset" values="0;10" dur="1s" repeatCount="indefinite"/>
         </path>
         
-        <!-- NAT to EIP (straight horizontal) -->
-        <path d="M1400,330 L1480,330" stroke="#FF9900"/>
-        <path d="M1400,330 L1480,330" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        <!-- NAT to EIP (right side of NAT to left side of EIP, avoiding corner) -->
+        <path d="M1400,310 L1440,310 L1440,390 L1480,390" stroke="#FF9900"/>
+        <path d="M1400,310 L1440,310 L1440,390 L1480,390" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
     </g>
     
     <!-- Traffic flow indicators -->
@@ -262,8 +262,8 @@
     </g>
     
     <!-- Performance Metrics (moved to bottom right with better layout) -->
-    <g transform="translate(1220, 900)">
-        <rect x="0" y="0" width="330" height="70" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
+    <g transform="translate(1200, 900)">
+        <rect x="0" y="0" width="350" height="70" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
         <text x="20" y="30" font-family="'SF Pro Display', -apple-system, sans-serif" 
               font-size="14" font-weight="500" fill="white">Performance Metrics</text>
         <g transform="translate(20, 45)">

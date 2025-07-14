@@ -40,6 +40,8 @@ When creating visualizations, architecture diagrams, or graphics:
 - **Maximum ONE right angle per connection** - Keep it simple and clean
 - **Use proper angles** - Only 90-degree turns, no arbitrary angles
 - **Vary connection points** - Lines don't have to connect at center; use top/bottom/sides
+- **NO CORNER INTERSECTIONS** - Lines must connect at: center, 1/4 from edge, or 3/4 from edge
+- **Stay within containers** - Lines should not extend outside subnet boundaries
 - **Logical routing** - Lines should make visual sense and follow the data flow
 - **Example good routing**: `M100,50 L200,50 L200,150` (horizontal, then vertical)
 - **Example bad routing**: `M100,50 Q150,100 200,150` (curved - never do this)
@@ -52,6 +54,21 @@ When creating visualizations, architecture diagrams, or graphics:
 4. Confirm subnets don't overlap
 5. Validate all animations are present
 6. Review connection points vary (not all center-to-center)
+7. No lines intersect at corners (use center or 1/4 positions)
+8. All lines stay within their container boundaries
+
+**ELEMENT-BY-ELEMENT VALIDATION:**
+When validating diagrams, create a todo for EACH element in the SVG. This ensures systematic validation of every component. For EVERY element in the diagram, check:
+- [ ] Shape has 30px+ padding from neighbors
+- [ ] Text fits within shape boundaries
+- [ ] Connected lines use proper intersection points (not corners)
+- [ ] Lines to/from this element use max 1 right angle
+- [ ] If in a subnet, element is fully contained with padding
+- [ ] Any animations on this element work properly
+- [ ] Colors/gradients render correctly
+- [ ] Element labels are readable and properly positioned
+
+**IMPORTANT:** Use the TodoWrite tool to create a checklist with one todo item per SVG element (e.g., "Validate API Gateway spacing", "Check Lambda-to-RDS connection", "Verify S3 text fits within bounds"). This ensures no element is missed during validation.
 
 **When creating visualizations:**
 1. Read the visualization-template.html file
