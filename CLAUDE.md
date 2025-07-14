@@ -35,6 +35,24 @@ When creating visualizations, architecture diagrams, or graphics:
 - **Background containers (like subnets) must not overlap** - Each should have its own clear space
 - **Leave breathing room** - Better to have a larger diagram with good spacing than cramped elements
 
+**CRITICAL Line Routing Rules:**
+- **NO CURVES** - Use only straight lines and right angles
+- **Maximum ONE right angle per connection** - Keep it simple and clean
+- **Use proper angles** - Only 90-degree turns, no arbitrary angles
+- **Vary connection points** - Lines don't have to connect at center; use top/bottom/sides
+- **Logical routing** - Lines should make visual sense and follow the data flow
+- **Example good routing**: `M100,50 L200,50 L200,150` (horizontal, then vertical)
+- **Example bad routing**: `M100,50 Q150,100 200,150` (curved - never do this)
+- **Avoid diagonal lines when possible** - Use horizontal/vertical segments
+
+**FINAL CHECK before rendering:**
+1. Check all shapes have 30px+ padding
+2. Verify no text extends outside containers
+3. Ensure all lines use straight segments with max 1 right angle
+4. Confirm subnets don't overlap
+5. Validate all animations are present
+6. Review connection points vary (not all center-to-center)
+
 **When creating visualizations:**
 1. Read the visualization-template.html file
 2. Copy it to a new file (e.g., `architecture-diagram.html`)
