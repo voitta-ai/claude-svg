@@ -25,6 +25,16 @@ When creating visualizations, architecture diagrams, or graphics:
 - Consider longer text strings when sizing containers
 - Default SVG dimensions: 1200x800 (template default)
 
+**CRITICAL Layout Rules for Diagrams:**
+- **NEVER overlap shapes** - Every shape must have clear space around it
+- **Subnet/container boxes must be larger** - They should clearly contain their elements with padding
+- **Minimum padding between shapes: 30px** - No shapes should touch or be too close
+- **Text must stay within its parent shape** - Never let labels extend outside their containers
+- **Center elements within containers** - If API Gateway is in public subnet, center it properly
+- **Animate ALL connection lines** - Every line should have flowing animation to show data movement
+- **Background containers (like subnets) must not overlap** - Each should have its own clear space
+- **Leave breathing room** - Better to have a larger diagram with good spacing than cramped elements
+
 **When creating visualizations:**
 1. Read the visualization-template.html file
 2. Copy it to a new file (e.g., `architecture-diagram.html`)

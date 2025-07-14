@@ -1,5 +1,5 @@
-<svg width="1400" height="900" viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
-    <!-- AWS Architecture Diagram -->
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+    <!-- AWS Architecture Diagram - Fixed Layout -->
     <defs>
         <!-- Gradients for AWS services -->
         <linearGradient id="awsOrange" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -52,24 +52,40 @@
     </defs>
     
     <!-- Background -->
-    <rect width="1400" height="900" fill="url(#bgGradient)"/>
+    <rect width="1600" height="1000" fill="url(#bgGradient)"/>
     
     <!-- Grid pattern -->
     <g opacity="0.05">
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
             <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
         </pattern>
-        <rect width="1400" height="900" fill="url(#grid)"/>
+        <rect width="1600" height="1000" fill="url(#grid)"/>
     </g>
     
     <!-- Title -->
-    <text x="700" y="60" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+    <text x="800" y="60" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
           font-size="36" font-weight="600" fill="white">AWS Cloud Architecture</text>
-    <text x="700" y="90" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+    <text x="800" y="90" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
           font-size="16" font-weight="400" fill="#8b92a8">Scalable Microservices Infrastructure</text>
     
-    <!-- Internet Gateway -->
-    <g transform="translate(100, 350)">
+    <!-- VPC Container -->
+    <rect x="250" y="150" width="1200" height="750" rx="16" fill="none" stroke="#4B93D9" stroke-width="2" 
+          stroke-dasharray="10 5" opacity="0.5"/>
+    <text x="270" y="180" font-family="'SF Pro Display', -apple-system, sans-serif" 
+          font-size="14" font-weight="500" fill="#4B93D9">VPC - 10.0.0.0/16</text>
+    
+    <!-- Public Subnet (larger, non-overlapping) -->
+    <rect x="280" y="210" width="320" height="300" rx="8" fill="#2d3748" opacity="0.3"/>
+    <text x="300" y="240" font-family="'SF Pro Display', -apple-system, sans-serif" 
+          font-size="12" font-weight="400" fill="#7AA116">Public Subnet - 10.0.1.0/24</text>
+    
+    <!-- Private Subnet (larger, non-overlapping) -->
+    <rect x="650" y="210" width="770" height="660" rx="8" fill="#2d3748" opacity="0.2"/>
+    <text x="670" y="240" font-family="'SF Pro Display', -apple-system, sans-serif" 
+          font-size="12" font-weight="400" fill="#4B93D9">Private Subnet - 10.0.2.0/24</text>
+    
+    <!-- Internet Gateway (outside VPC) -->
+    <g transform="translate(50, 350)">
         <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#4B93D9" stroke-width="2" filter="url(#shadow)"/>
         <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsBlue)" opacity="0.1"/>
         <path d="M60,30 L60,90 M30,60 L90,60 M40,40 L80,80 M80,40 L40,80" 
@@ -78,79 +94,101 @@
               font-size="14" font-weight="500" fill="white">Internet Gateway</text>
     </g>
     
-    <!-- API Gateway -->
-    <g transform="translate(300, 350)">
-        <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
-        <circle cx="60" cy="60" r="25" fill="none" stroke="url(#awsOrange)" stroke-width="3"/>
-        <path d="M60,35 L60,85 M35,60 L85,60" stroke="url(#awsOrange)" stroke-width="3" stroke-linecap="round"/>
-        <text x="60" y="140" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">API Gateway</text>
+    <!-- API Gateway (centered in public subnet) -->
+    <g transform="translate(370, 330)">
+        <rect x="0" y="0" width="140" height="120" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="120" height="100" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
+        <circle cx="70" cy="60" r="25" fill="none" stroke="url(#awsOrange)" stroke-width="3"/>
+        <path d="M70,35 L70,85 M45,60 L95,60" stroke="url(#awsOrange)" stroke-width="3" stroke-linecap="round"/>
+        <text x="70" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">API Gateway</text>
     </g>
     
-    <!-- Lambda Functions -->
-    <g transform="translate(550, 250)">
-        <rect x="0" y="0" width="140" height="140" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="120" height="120" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
-        <path d="M70,40 L50,90 L90,90 Z" fill="url(#awsOrange)" opacity="0.8"/>
-        <path d="M55,60 L75,60 M65,50 L65,70" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        <text x="70" y="160" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">Lambda Functions</text>
-        <text x="70" y="180" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="12" font-weight="400" fill="#8b92a8">Auto-scaling</text>
+    <!-- Lambda Functions (with proper spacing) -->
+    <g transform="translate(720, 290)">
+        <rect x="0" y="0" width="160" height="140" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="140" height="120" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
+        <path d="M80,40 L60,90 L100,90 Z" fill="url(#awsOrange)" opacity="0.8"/>
+        <path d="M65,60 L85,60 M75,50 L75,70" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <text x="80" y="155" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">Lambda Functions</text>
+        <text x="80" y="175" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="11" font-weight="400" fill="#8b92a8">Auto-scaling</text>
     </g>
     
-    <!-- ECS Cluster -->
-    <g transform="translate(550, 450)">
-        <rect x="0" y="0" width="140" height="140" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="120" height="120" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
-        <rect x="30" y="40" width="35" height="35" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
-        <rect x="75" y="40" width="35" height="35" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
-        <rect x="30" y="85" width="35" height="35" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
-        <rect x="75" y="85" width="35" height="35" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
-        <text x="70" y="160" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">ECS Fargate</text>
-        <text x="70" y="180" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="12" font-weight="400" fill="#8b92a8">Container Cluster</text>
+    <!-- ECS Cluster (with proper spacing) -->
+    <g transform="translate(720, 500)">
+        <rect x="0" y="0" width="160" height="140" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="140" height="120" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
+        <rect x="35" y="35" width="40" height="40" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
+        <rect x="85" y="35" width="40" height="40" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
+        <rect x="35" y="85" width="40" height="40" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
+        <rect x="85" y="85" width="40" height="40" rx="4" fill="url(#awsOrange)" opacity="0.6"/>
+        <text x="80" y="155" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">ECS Fargate</text>
+        <text x="80" y="175" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="11" font-weight="400" fill="#8b92a8">Container Cluster</text>
     </g>
     
-    <!-- RDS Database -->
-    <g transform="translate(850, 350)">
-        <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#4B93D9" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsBlue)" opacity="0.1"/>
-        <ellipse cx="60" cy="45" rx="30" ry="15" fill="url(#awsBlue)" opacity="0.6"/>
-        <rect x="30" y="45" width="60" height="30" fill="url(#awsBlue)" opacity="0.6"/>
-        <ellipse cx="60" cy="75" rx="30" ry="15" fill="url(#awsBlue)" opacity="0.8"/>
-        <text x="60" y="140" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">RDS Aurora</text>
-        <text x="60" y="160" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="12" font-weight="400" fill="#8b92a8">Multi-AZ</text>
+    <!-- Application Load Balancer -->
+    <g transform="translate(720, 700)">
+        <rect x="0" y="0" width="160" height="120" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="140" height="100" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
+        <path d="M50,50 L110,50 M50,60 L110,60 M50,70 L110,70" stroke="url(#awsOrange)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="40" cy="60" r="5" fill="url(#awsOrange)"/>
+        <circle cx="120" cy="60" r="5" fill="url(#awsOrange)"/>
+        <text x="80" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">Load Balancer</text>
     </g>
     
-    <!-- ElastiCache -->
-    <g transform="translate(850, 530)">
-        <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#7AA116" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsGreen)" opacity="0.1"/>
-        <rect x="35" y="35" width="50" height="50" rx="4" fill="none" stroke="url(#awsGreen)" stroke-width="3"/>
-        <circle cx="60" cy="60" r="15" fill="url(#awsGreen)" opacity="0.8"/>
-        <text x="60" y="140" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">ElastiCache</text>
-        <text x="60" y="160" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="12" font-weight="400" fill="#8b92a8">Redis Cluster</text>
+    <!-- RDS Database (with proper spacing) -->
+    <g transform="translate(1020, 360)">
+        <rect x="0" y="0" width="140" height="120" rx="8" fill="#232f3e" stroke="#4B93D9" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="120" height="100" rx="4" fill="url(#awsBlue)" opacity="0.1"/>
+        <ellipse cx="70" cy="45" rx="35" ry="15" fill="url(#awsBlue)" opacity="0.6"/>
+        <rect x="35" y="45" width="70" height="30" fill="url(#awsBlue)" opacity="0.6"/>
+        <ellipse cx="70" cy="75" rx="35" ry="15" fill="url(#awsBlue)" opacity="0.8"/>
+        <text x="70" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">RDS Aurora</text>
+        <text x="70" y="155" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="11" font-weight="400" fill="#8b92a8">Multi-AZ</text>
     </g>
     
-    <!-- NAT Gateway -->
-    <g transform="translate(1100, 250)">
-        <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#4B93D9" stroke-width="2" filter="url(#shadow)"/>
-        <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsBlue)" opacity="0.1"/>
-        <path d="M40,60 L80,60 M50,50 L40,60 L50,70 M70,50 L80,60 L70,70" 
+    <!-- ElastiCache (with proper spacing) -->
+    <g transform="translate(1020, 550)">
+        <rect x="0" y="0" width="140" height="120" rx="8" fill="#232f3e" stroke="#7AA116" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="120" height="100" rx="4" fill="url(#awsGreen)" opacity="0.1"/>
+        <rect x="40" y="35" width="60" height="50" rx="4" fill="none" stroke="url(#awsGreen)" stroke-width="3"/>
+        <circle cx="70" cy="60" r="15" fill="url(#awsGreen)" opacity="0.8"/>
+        <text x="70" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">ElastiCache</text>
+        <text x="70" y="155" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="11" font-weight="400" fill="#8b92a8">Redis Cluster</text>
+    </g>
+    
+    <!-- S3 Storage -->
+    <g transform="translate(1240, 460)">
+        <rect x="0" y="0" width="140" height="120" rx="8" fill="#232f3e" stroke="#7AA116" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="120" height="100" rx="4" fill="url(#awsGreen)" opacity="0.1"/>
+        <path d="M70,35 C50,35 40,50 40,65 C40,80 50,95 70,95 C90,95 100,80 100,65 C100,50 90,35 70,35 Z" 
+              fill="url(#awsGreen)" opacity="0.6"/>
+        <path d="M55,55 L85,55 M55,65 L85,65 M55,75 L85,75" stroke="white" stroke-width="2"/>
+        <text x="70" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">S3 Storage</text>
+    </g>
+    
+    <!-- NAT Gateway (properly spaced) -->
+    <g transform="translate(1240, 290)">
+        <rect x="0" y="0" width="140" height="120" rx="8" fill="#232f3e" stroke="#4B93D9" stroke-width="2" filter="url(#shadow)"/>
+        <rect x="10" y="10" width="120" height="100" rx="4" fill="url(#awsBlue)" opacity="0.1"/>
+        <path d="M50,60 L90,60 M60,50 L50,60 L60,70 M80,50 L90,60 L80,70" 
               stroke="url(#awsBlue)" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <text x="60" y="140" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
-              font-size="14" font-weight="500" fill="white">NAT Gateway</text>
+        <text x="70" y="135" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" 
+              font-size="13" font-weight="500" fill="white">NAT Gateway</text>
     </g>
     
-    <!-- Elastic IP -->
-    <g transform="translate(1100, 430)">
+    <!-- Elastic IP (outside VPC) -->
+    <g transform="translate(1480, 350)">
         <rect x="0" y="0" width="120" height="120" rx="8" fill="#232f3e" stroke="#FF9900" stroke-width="2" filter="url(#shadow)"/>
         <rect x="10" y="10" width="100" height="100" rx="4" fill="url(#awsOrange)" opacity="0.1"/>
         <circle cx="60" cy="60" r="30" fill="none" stroke="url(#awsOrange)" stroke-width="3"/>
@@ -159,91 +197,87 @@
               font-size="14" font-weight="500" fill="white">Elastic IP</text>
     </g>
     
-    <!-- VPC Container -->
-    <rect x="270" y="200" width="830" height="470" rx="16" fill="none" stroke="#4B93D9" stroke-width="2" 
-          stroke-dasharray="10 5" opacity="0.5"/>
-    <text x="290" y="230" font-family="'SF Pro Display', -apple-system, sans-serif" 
-          font-size="14" font-weight="500" fill="#4B93D9">VPC - 10.0.0.0/16</text>
-    
-    <!-- Public Subnet -->
-    <rect x="290" y="250" width="220" height="180" rx="8" fill="#2d3748" opacity="0.3"/>
-    <text x="300" y="270" font-family="'SF Pro Display', -apple-system, sans-serif" 
-          font-size="12" font-weight="400" fill="#7AA116">Public Subnet</text>
-    
-    <!-- Private Subnet -->
-    <rect x="530" y="250" width="550" height="400" rx="8" fill="#2d3748" opacity="0.2"/>
-    <text x="540" y="270" font-family="'SF Pro Display', -apple-system, sans-serif" 
-          font-size="12" font-weight="400" fill="#4B93D9">Private Subnet</text>
-    
-    <!-- Connections with animations -->
+    <!-- Animated connections with proper flow -->
     <g stroke-width="3" fill="none" opacity="0.8">
         <!-- Internet to IGW -->
-        <path d="M220,410 L300,410" stroke="#4B93D9" stroke-dasharray="5 5">
-            <animate attributeName="stroke-dashoffset" values="0;10" dur="1s" repeatCount="indefinite"/>
-        </path>
+        <path d="M170,410 L250,410" stroke="#4B93D9"/>
+        <path d="M170,410 L250,410" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- IGW to API Gateway -->
-        <path d="M220,410 L300,410" stroke="#4B93D9"/>
-        <path d="M220,410 L300,410" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        <path d="M250,410 Q310,410 310,390 L370,390" stroke="#4B93D9"/>
+        <path d="M250,410 Q310,410 310,390 L370,390" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- API Gateway to Lambda -->
-        <path d="M420,410 Q485,410 485,320 L550,320" stroke="#FF9900"/>
-        <path d="M420,410 Q485,410 485,320 L550,320" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        <path d="M510,390 Q615,390 615,360 L720,360" stroke="#FF9900"/>
+        <path d="M510,390 Q615,390 615,360 L720,360" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- API Gateway to ECS -->
-        <path d="M420,410 Q485,410 485,520 L550,520" stroke="#FF9900"/>
-        <path d="M420,410 Q485,410 485,520 L550,520" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        <path d="M510,390 Q615,390 615,570 L720,570" stroke="#FF9900"/>
+        <path d="M510,390 Q615,390 615,570 L720,570" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        
+        <!-- API Gateway to ALB -->
+        <path d="M510,390 Q615,390 615,760 L720,760" stroke="#FF9900"/>
+        <path d="M510,390 Q615,390 615,760 L720,760" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- Lambda to RDS -->
-        <path d="M690,320 Q770,320 770,410 L850,410" stroke="#4B93D9"/>
+        <path d="M880,360 Q950,360 950,420 L1020,420" stroke="#4B93D9"/>
+        <path d="M880,360 Q950,360 950,420 L1020,420" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- ECS to RDS -->
-        <path d="M690,520 Q770,520 770,410 L850,410" stroke="#4B93D9"/>
+        <path d="M880,570 Q950,570 950,420 L1020,420" stroke="#4B93D9"/>
+        <path d="M880,570 Q950,570 950,420 L1020,420" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- ECS to ElastiCache -->
-        <path d="M690,520 Q770,520 770,590 L850,590" stroke="#7AA116"/>
+        <path d="M880,570 Q950,570 950,610 L1020,610" stroke="#7AA116"/>
+        <path d="M880,570 Q950,570 950,610 L1020,610" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
+        
+        <!-- Lambda to S3 -->
+        <path d="M880,360 Q1060,360 1060,520 L1240,520" stroke="#7AA116"/>
+        <path d="M880,360 Q1060,360 1060,520 L1240,520" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
         
         <!-- Lambda to NAT -->
-        <path d="M690,320 Q900,320 900,310 L1100,310" stroke="#4B93D9" stroke-dasharray="5 5"/>
-        
-        <!-- ECS to NAT -->
-        <path d="M690,520 Q900,520 900,310 L1100,310" stroke="#4B93D9" stroke-dasharray="5 5"/>
+        <path d="M880,360 Q1060,360 1060,350 L1240,350" stroke="#4B93D9" stroke-dasharray="5 5"/>
+        <animate attributeName="stroke-dashoffset" values="0;10" dur="1s" repeatCount="indefinite"/>
         
         <!-- NAT to EIP -->
-        <path d="M1160,370 L1160,430" stroke="#FF9900"/>
+        <path d="M1380,350 Q1430,350 1430,410 L1480,410" stroke="#FF9900"/>
+        <path d="M1380,350 Q1430,350 1430,410 L1480,410" stroke="url(#flow)" stroke-width="5" opacity="0.6"/>
     </g>
     
     <!-- Traffic flow indicators -->
     <g>
         <circle r="4" fill="#4B93D9">
-            <animateMotion path="M220,410 L300,410" dur="2s" repeatCount="indefinite"/>
+            <animateMotion path="M170,410 L250,410" dur="2s" repeatCount="indefinite"/>
         </circle>
         <circle r="4" fill="#FF9900">
-            <animateMotion path="M420,410 Q485,410 485,320 L550,320" dur="2s" repeatCount="indefinite"/>
+            <animateMotion path="M510,390 Q615,390 615,360 L720,360" dur="2.5s" repeatCount="indefinite"/>
         </circle>
         <circle r="4" fill="#FF9900">
-            <animateMotion path="M420,410 Q485,410 485,520 L550,520" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+            <animateMotion path="M510,390 Q615,390 615,570 L720,570" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="4" fill="#4B93D9">
+            <animateMotion path="M880,360 Q950,360 950,420 L1020,420" dur="2s" begin="1s" repeatCount="indefinite"/>
         </circle>
     </g>
     
     <!-- Status indicators -->
-    <g transform="translate(50, 750)">
-        <rect x="0" y="0" width="300" height="80" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
-        <text x="20" y="30" font-family="'SF Pro Display', -apple-system, sans-serif" 
+    <g transform="translate(50, 900)">
+        <rect x="0" y="0" width="300" height="60" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
+        <text x="20" y="25" font-family="'SF Pro Display', -apple-system, sans-serif" 
               font-size="14" font-weight="500" fill="white">System Status</text>
-        <circle cx="40" cy="55" r="5" fill="#7AA116">
+        <circle cx="40" cy="40" r="5" fill="#7AA116">
             <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <text x="55" y="60" font-family="'SF Pro Display', -apple-system, sans-serif" 
+        <text x="55" y="45" font-family="'SF Pro Display', -apple-system, sans-serif" 
               font-size="12" font-weight="400" fill="#8b92a8">All Systems Operational</text>
     </g>
     
     <!-- Metrics -->
-    <g transform="translate(1050, 750)">
-        <rect x="0" y="0" width="300" height="80" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
-        <text x="20" y="30" font-family="'SF Pro Display', -apple-system, sans-serif" 
+    <g transform="translate(1250, 900)">
+        <rect x="0" y="0" width="300" height="60" rx="8" fill="#1e293b" stroke="#2d3748" stroke-width="1"/>
+        <text x="20" y="25" font-family="'SF Pro Display', -apple-system, sans-serif" 
               font-size="14" font-weight="500" fill="white">Performance Metrics</text>
-        <text x="20" y="55" font-family="monospace" font-size="12" fill="#7AA116">Latency: 42ms</text>
-        <text x="160" y="55" font-family="monospace" font-size="12" fill="#4B93D9">Uptime: 99.99%</text>
+        <text x="20" y="45" font-family="monospace" font-size="12" fill="#7AA116">Latency: 42ms</text>
+        <text x="160" y="45" font-family="monospace" font-size="12" fill="#4B93D9">Uptime: 99.99%</text>
     </g>
 </svg>
