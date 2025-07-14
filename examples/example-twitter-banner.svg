@@ -63,7 +63,7 @@
         <text x="2" y="182" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="rgba(0,0,0,0.5)">
             AI Agents
         </text>
-        <text x="0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="url(#textGradient)" stroke="white" stroke-width="1">
+        <text x="0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" fill="white">
             AI Agents
         </text>
         
