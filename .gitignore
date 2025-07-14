@@ -1,13 +1,13 @@
 # Generated visualization files
 *.html
 *.png
+*.svg
 *.svg.png
 
-# Keep the example/template files
-!example-*.html
-!example-*.svg
-!template-*.html
+# Keep the template and examples
 !visualization-template.html
+!examples/
+!examples/*.svg
 
 # OS generated files
 .DS_Store
