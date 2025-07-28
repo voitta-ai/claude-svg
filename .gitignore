@@ -34,3 +34,6 @@ Thumbs.db
 # Keep important markdown files
 !README.md
 !CLAUDE.md
+
+# Node.js dependencies
+node_modules/
