@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "claude-svg-editor": {
+      "command": "node",
+      "args": [
+        "/Users/gregory.golberg/g/svalka/llm/mcp/claude-svg/build/index.js"
+      ],
+      "env": {}
+    }
+  }
+}

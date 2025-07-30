@@ -1,5 +1,27 @@
 {
+  "name": "claude-svg-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Claude SVG Editor - professional diagram generation and editing",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "claude-svg-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js",
+    "dev": "tsc --watch",
+    "start": "node build/index.js"
+  },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "zod": "^3.23.8",
     "svgedit": "^7.3.8"
-  }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": ["mcp", "svg", "diagrams", "claude", "visualization"],
+  "author": "Claude SVG Editor",
+  "license": "MIT"
 }
