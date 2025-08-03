@@ -19,6 +19,8 @@ export class ResourceManager {
       return await this.getTemplates();
     } else if (path.startsWith("/examples/")) {
       return await this.getExamples();
+    } else if (path.startsWith("/context/")) {
+      return await this.getProjectContext();
     } else {
       throw new Error(`Unknown resource path: ${path}`);
     }
@@ -128,6 +130,29 @@ export class ResourceManager {
       );
     } catch (error) {
       return [];
+    }
+  }
+
+  private async getProjectContext(): Promise<{ contents: Array<{ uri: string; text: string; mimeType?: string }> }> {
+    try {
+      const claudeMdPath = join(this.projectRoot, "CLAUDE.md");
+      const content = await readFile(claudeMdPath, 'utf-8');
+      
+      return {
+        contents: [{
+          uri: "claude://context/",
+          text: content,
+          mimeType: "text/markdown"
+        }]
+      };
+    } catch (error) {
+      return {
+        contents: [{
+          uri: "claude://context/",
+          text: "# Project Context\n\nCLAUDE.md file not found or could not be read.\n\nError: " + (error instanceof Error ? error.message : String(error)),
+          mimeType: "text/markdown"
+        }]
+      };
     }
   }
 }

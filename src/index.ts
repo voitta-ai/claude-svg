@@ -57,6 +57,12 @@ class ClaudeSVGMCPServer {
           description: "Browse example diagrams and visualizations",
           mimeType: "application/json",
         },
+        {
+          uri: "claude://context/",
+          name: "Project Context",
+          description: "CLAUDE.md project instructions and guidelines",
+          mimeType: "text/markdown",
+        },
       ],
     }));
 
@@ -225,6 +231,20 @@ class ClaudeSVGMCPServer {
             required: ["svg_content"],
           },
         },
+        {
+          name: "get_project_context",
+          description: "Get project guidelines and instructions from CLAUDE.md to use as system prompt",
+          inputSchema: {
+            type: "object",
+            properties: {
+              include_examples: {
+                type: "boolean",
+                default: false,
+                description: "Include example files and templates in the response",
+              },
+            },
+          },
+        },
       ],
     }));
 
@@ -241,6 +261,8 @@ class ClaudeSVGMCPServer {
             return await this.handleEditSVGElement(args);
           case "export_svg":
             return await this.handleExportSVG(args);
+          case "get_project_context":
+            return await this.handleGetProjectContext(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -363,6 +385,46 @@ class ClaudeSVGMCPServer {
         {
           type: "text",
           text: `SVG exported as ${params.format} successfully!\n\nExported file: ${result.filePath}`,
+        },
+      ],
+    };
+  }
+
+  private async handleGetProjectContext(args: any) {
+    const schema = z.object({
+      include_examples: z.boolean().default(false),
+    });
+
+    const params = schema.parse(args);
+    
+    // Get CLAUDE.md content
+    const contextUri = new URL("claude://context/");
+    const contextResult = await this.resourceManager.readResource(contextUri);
+    
+    let response = "# Project Context and Guidelines\n\n";
+    response += contextResult.contents[0].text;
+    
+    if (params.include_examples) {
+      // Get templates
+      const templatesUri = new URL("svg://templates/");
+      const templatesResult = await this.resourceManager.readResource(templatesUri);
+      
+      response += "\n\n# Available Templates\n\n";
+      response += templatesResult.contents[0].text;
+      
+      // Get examples
+      const examplesUri = new URL("svg://examples/");
+      const examplesResult = await this.resourceManager.readResource(examplesUri);
+      
+      response += "\n\n# Example Files\n\n";
+      response += examplesResult.contents[0].text;
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: response,
         },
       ],
     };

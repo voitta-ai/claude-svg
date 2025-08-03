@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { ResourceManager } from "./resource-manager.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,12 +29,30 @@ export interface GenerationResult {
 
 export class SVGGenerator {
   private templatePath: string;
+  private resourceManager: ResourceManager;
+  private projectGuidelines: string | null = null;
 
   constructor() {
     this.templatePath = join(__dirname, "..", "visualization-template.html");
+    this.resourceManager = new ResourceManager();
+  }
+
+  async loadProjectGuidelines(): Promise<void> {
+    try {
+      const contextUri = new URL("claude://context/");
+      const contextResult = await this.resourceManager.readResource(contextUri);
+      this.projectGuidelines = contextResult.contents[0].text;
+    } catch (error) {
+      console.warn("Could not load CLAUDE.md guidelines:", error);
+      this.projectGuidelines = null;
+    }
   }
 
   async generateDiagram(params: DiagramParams): Promise<GenerationResult> {
+    if (!this.projectGuidelines) {
+      await this.loadProjectGuidelines();
+    }
+    
     const svg = await this.createDiagramSVG(params);
     const htmlPath = await this.createHTMLFile(svg, `${params.type}-diagram`);
     
@@ -41,6 +60,10 @@ export class SVGGenerator {
   }
 
   async generateBanner(params: BannerParams): Promise<GenerationResult> {
+    if (!this.projectGuidelines) {
+      await this.loadProjectGuidelines();
+    }
+    
     const svg = await this.createBannerSVG(params);
     const htmlPath = await this.createHTMLFile(svg, `${params.platform}-banner`);
     
@@ -79,6 +102,7 @@ export class SVGGenerator {
     const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
     const textColor = style === "dark" ? "#ffffff" : "#1e293b";
     
+    // Following CLAUDE.md guidelines: minimum 30px spacing, no overlapping elements, proper container sizing
     return `<svg id="visualization" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="awsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -88,43 +112,43 @@ export class SVGGenerator {
         <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
         </filter>
-      </defs>
-      
-      <rect width="${width}" height="${height}" fill="${bgColor}"/>
-      
-      <!-- VPC Container -->
-      <rect x="100" y="100" width="${width - 200}" height="${height - 200}" 
-            fill="none" stroke="#232f3e" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
-      <text x="120" y="130" fill="${textColor}" font-size="16" font-weight="bold">VPC</text>
-      
-      <!-- API Gateway -->
-      <rect x="200" y="200" width="120" height="80" fill="url(#awsGradient)" rx="8" filter="url(#shadow)"/>
-      <text x="260" y="235" fill="white" font-size="12" text-anchor="middle">API</text>
-      <text x="260" y="250" fill="white" font-size="12" text-anchor="middle">Gateway</text>
-      
-      <!-- Lambda Function -->
-      <rect x="400" y="200" width="120" height="80" fill="#ff9900" rx="8" filter="url(#shadow)"/>
-      <text x="460" y="235" fill="white" font-size="12" text-anchor="middle">Lambda</text>
-      <text x="460" y="250" fill="white" font-size="12" text-anchor="middle">Function</text>
-      
-      <!-- RDS Database -->
-      <rect x="600" y="200" width="120" height="80" fill="#3498db" rx="8" filter="url(#shadow)"/>
-      <text x="660" y="235" fill="white" font-size="12" text-anchor="middle">RDS</text>
-      <text x="660" y="250" fill="white" font-size="12" text-anchor="middle">Database</text>
-      
-      <!-- Connections -->
-      <line x1="320" y1="240" x2="400" y2="240" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)"/>
-      <line x1="520" y1="240" x2="600" y2="240" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)"/>
-      
-      <!-- Arrow marker -->
-      <defs>
         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
           <polygon points="0 0, 10 3.5, 0 7" fill="${textColor}"/>
         </marker>
       </defs>
       
-      <!-- Title -->
-      <text x="${width / 2}" y="50" fill="${textColor}" font-size="24" font-weight="bold" text-anchor="middle">
+      <rect width="${width}" height="${height}" fill="${bgColor}"/>
+      
+      <!-- VPC Container with proper padding -->
+      <rect x="80" y="80" width="${width - 160}" height="${height - 160}" 
+            fill="none" stroke="#232f3e" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+      <text x="100" y="110" fill="${textColor}" font-size="16" font-weight="bold">VPC</text>
+      
+      <!-- API Gateway - positioned with 30px spacing -->
+      <rect x="150" y="180" width="140" height="100" fill="url(#awsGradient)" rx="8" filter="url(#shadow)"/>
+      <text x="220" y="220" fill="white" font-size="14" text-anchor="middle">API</text>
+      <text x="220" y="240" fill="white" font-size="14" text-anchor="middle">Gateway</text>
+      
+      <!-- Lambda Function - 30px spacing from API Gateway -->
+      <rect x="320" y="180" width="140" height="100" fill="#ff9900" rx="8" filter="url(#shadow)"/>
+      <text x="390" y="220" fill="white" font-size="14" text-anchor="middle">Lambda</text>
+      <text x="390" y="240" fill="white" font-size="14" text-anchor="middle">Function</text>
+      
+      <!-- RDS Database - 30px spacing from Lambda -->
+      <rect x="490" y="180" width="140" height="100" fill="#3498db" rx="8" filter="url(#shadow)"/>
+      <text x="560" y="220" fill="white" font-size="14" text-anchor="middle">RDS</text>
+      <text x="560" y="240" fill="white" font-size="14" text-anchor="middle">Database</text>
+      
+      <!-- Straight line connections following CLAUDE.md guidelines -->
+      <line x1="290" y1="230" x2="320" y2="230" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)">
+        <animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>
+      </line>
+      <line x1="460" y1="230" x2="490" y2="230" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)">
+        <animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- Title with proper spacing -->
+      <text x="${width / 2}" y="40" fill="${textColor}" font-size="24" font-weight="bold" text-anchor="middle">
         AWS Architecture: ${description.slice(0, 30)}${description.length > 30 ? '...' : ''}
       </text>
     </svg>`;
