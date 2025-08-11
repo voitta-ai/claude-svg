@@ -545,48 +545,480 @@
             img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
         }
         
-        // Open in SVG Editor
+        // SVG Editing System - All modules inline
+        
+        // SVG Utility Functions
+        class SVGUtils {
+            static getElementBounds(element) {
+                try {
+                    if (element.tagName === 'rect') {
+                        const x = parseFloat(element.getAttribute('x')) || 0;
+                        const y = parseFloat(element.getAttribute('y')) || 0;
+                        const width = parseFloat(element.getAttribute('width')) || 0;
+                        const height = parseFloat(element.getAttribute('height')) || 0;
+                        return { x, y, width, height, centerX: x + width/2, centerY: y + height/2 };
+                    } else if (element.tagName === 'circle') {
+                        const cx = parseFloat(element.getAttribute('cx')) || 0;
+                        const cy = parseFloat(element.getAttribute('cy')) || 0;
+                        const r = parseFloat(element.getAttribute('r')) || 0;
+                        return { x: cx - r, y: cy - r, width: r * 2, height: r * 2, centerX: cx, centerY: cy };
+                    } else if (element.tagName === 'path') {
+                        const d = element.getAttribute('d');
+                        const points = this.parsePath(d);
+                        if (points.length > 0) {
+                            const xs = points.map(p => p.x);
+                            const ys = points.map(p => p.y);
+                            const minX = Math.min(...xs);
+                            const maxX = Math.max(...xs);
+                            const minY = Math.min(...ys);
+                            const maxY = Math.max(...ys);
+                            return {
+                                x: minX, y: minY,
+                                width: maxX - minX, height: maxY - minY,
+                                centerX: (minX + maxX) / 2, centerY: (minY + maxY) / 2
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error getting bounds for element:', element, e);
+                }
+                return null;
+            }
+            
+            static parsePath(d) {
+                const points = [];
+                const commands = d.match(/[ML]\s*[\d\.\-\s,]+/g) || [];
+                
+                commands.forEach(cmd => {
+                    const coords = cmd.substring(1).trim().split(/[\s,]+/).map(parseFloat);
+                    if (coords.length >= 2) {
+                        points.push({ x: coords[0], y: coords[1] });
+                    }
+                });
+                
+                return points;
+            }
+            
+            static updatePathPosition(pathElement, deltaX, deltaY) {
+                const originalD = pathElement.getAttribute('data-original-path');
+                if (!originalD) return;
+                
+                const originalPoints = this.parsePath(originalD);
+                if (originalPoints.length === 0) return;
+                
+                const updatedPoints = originalPoints.map(point => ({
+                    x: point.x + deltaX,
+                    y: point.y + deltaY
+                }));
+                
+                let newD = `M ${updatedPoints[0].x} ${updatedPoints[0].y}`;
+                for (let i = 1; i < updatedPoints.length; i++) {
+                    newD += ` L ${updatedPoints[i].x} ${updatedPoints[i].y}`;
+                }
+                if (originalD.includes('Z') || originalD.includes('z')) {
+                    newD += ' Z';
+                }
+                
+                pathElement.setAttribute('d', newD);
+            }
+        }
+
+        // Undo System
+        class UndoSystem {
+            constructor(svg, maxSteps = 50) {
+                this.svg = svg;
+                this.undoStack = [];
+                this.redoStack = [];
+                this.maxUndoSteps = maxSteps;
+                this.setupKeyboardShortcuts();
+            }
+            
+            saveState(actionName) {
+                const currentState = {
+                    svg: this.svg.innerHTML,
+                    action: actionName,
+                    timestamp: Date.now()
+                };
+                
+                this.undoStack.push(currentState);
+                
+                if (this.undoStack.length > this.maxUndoSteps) {
+                    this.undoStack.shift();
+                }
+                
+                this.redoStack = [];
+            }
+            
+            undo() {
+                if (this.undoStack.length === 0) {
+                    this.showStatus('Nothing to undo');
+                    return false;
+                }
+                
+                const currentState = {
+                    svg: this.svg.innerHTML,
+                    action: 'current',
+                    timestamp: Date.now()
+                };
+                this.redoStack.push(currentState);
+                
+                const previousState = this.undoStack.pop();
+                this.svg.innerHTML = previousState.svg;
+                
+                this.rebuildInteractions();
+                this.showStatus(`Undid: ${previousState.action}`);
+                return true;
+            }
+            
+            redo() {
+                if (this.redoStack.length === 0) {
+                    this.showStatus('Nothing to redo');
+                    return false;
+                }
+                
+                const currentState = {
+                    svg: this.svg.innerHTML,
+                    action: 'before_redo',
+                    timestamp: Date.now()
+                };
+                this.undoStack.push(currentState);
+                
+                const nextState = this.redoStack.pop();
+                this.svg.innerHTML = nextState.svg;
+                
+                this.rebuildInteractions();
+                this.showStatus('Redid action');
+                return true;
+            }
+            
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.undo();
+                    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                        e.preventDefault();
+                        this.redo();
+                    }
+                });
+            }
+            
+            showStatus(message) {
+                showEditingStatus(message);
+            }
+            
+            rebuildInteractions() {
+                window.rebuildSVGInteractions();
+            }
+        }
+
+        // Drag Handler
+        class DragHandler {
+            constructor(svg, undoSystem) {
+                this.svg = svg;
+                this.undoSystem = undoSystem;
+                this.isDragging = false;
+                this.selectedElement = null;
+                this.dragStartX = 0;
+                this.dragStartY = 0;
+                this.elementStartX = 0;
+                this.elementStartY = 0;
+                this.lineStartX2 = 0;
+                this.lineStartY2 = 0;
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.svg.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+            }
+            
+            handleMouseDown(e) {
+                if (!this.selectedElement) return;
+                
+                this.undoSystem.saveState('before_drag');
+                
+                this.isDragging = true;
+                this.dragStartX = e.clientX;
+                this.dragStartY = e.clientY;
+                
+                this.storeOriginalPosition();
+                
+                this.selectedElement.classList.add('dragging');
+                e.preventDefault();
+            }
+            
+            storeOriginalPosition() {
+                if (this.selectedElement.tagName === 'rect') {
+                    this.elementStartX = parseFloat(this.selectedElement.getAttribute('x') || 0);
+                    this.elementStartY = parseFloat(this.selectedElement.getAttribute('y') || 0);
+                } else if (this.selectedElement.tagName === 'circle') {
+                    this.elementStartX = parseFloat(this.selectedElement.getAttribute('cx') || 0);
+                    this.elementStartY = parseFloat(this.selectedElement.getAttribute('cy') || 0);
+                } else if (this.selectedElement.tagName === 'text') {
+                    this.elementStartX = parseFloat(this.selectedElement.getAttribute('x') || 0);
+                    this.elementStartY = parseFloat(this.selectedElement.getAttribute('y') || 0);
+                } else if (this.selectedElement.tagName === 'path') {
+                    const bounds = SVGUtils.getElementBounds(this.selectedElement);
+                    if (bounds) {
+                        this.elementStartX = bounds.centerX;
+                        this.elementStartY = bounds.centerY;
+                        this.selectedElement.setAttribute('data-original-path', this.selectedElement.getAttribute('d'));
+                    }
+                } else if (this.selectedElement.tagName === 'line') {
+                    this.elementStartX = parseFloat(this.selectedElement.getAttribute('x1') || 0);
+                    this.elementStartY = parseFloat(this.selectedElement.getAttribute('y1') || 0);
+                    this.lineStartX2 = parseFloat(this.selectedElement.getAttribute('x2') || 0);
+                    this.lineStartY2 = parseFloat(this.selectedElement.getAttribute('y2') || 0);
+                }
+            }
+            
+            handleMouseMove(e) {
+                if (!this.isDragging || !this.selectedElement) return;
+                
+                const deltaX = e.clientX - this.dragStartX;
+                const deltaY = e.clientY - this.dragStartY;
+                
+                this.updateElementPosition(deltaX, deltaY);
+                this.updateSelectionBox();
+            }
+            
+            updateElementPosition(deltaX, deltaY) {
+                if (this.selectedElement.tagName === 'rect') {
+                    this.selectedElement.setAttribute('x', this.elementStartX + deltaX);
+                    this.selectedElement.setAttribute('y', this.elementStartY + deltaY);
+                } else if (this.selectedElement.tagName === 'circle') {
+                    this.selectedElement.setAttribute('cx', this.elementStartX + deltaX);
+                    this.selectedElement.setAttribute('cy', this.elementStartY + deltaY);
+                } else if (this.selectedElement.tagName === 'text') {
+                    this.selectedElement.setAttribute('x', this.elementStartX + deltaX);
+                    this.selectedElement.setAttribute('y', this.elementStartY + deltaY);
+                } else if (this.selectedElement.tagName === 'path') {
+                    SVGUtils.updatePathPosition(this.selectedElement, deltaX, deltaY);
+                } else if (this.selectedElement.tagName === 'line') {
+                    this.selectedElement.setAttribute('x1', this.elementStartX + deltaX);
+                    this.selectedElement.setAttribute('y1', this.elementStartY + deltaY);
+                    this.selectedElement.setAttribute('x2', this.lineStartX2 + deltaX);
+                    this.selectedElement.setAttribute('y2', this.lineStartY2 + deltaY);
+                }
+            }
+            
+            handleMouseUp() {
+                this.isDragging = false;
+                if (this.selectedElement) {
+                    this.selectedElement.classList.remove('dragging');
+                }
+            }
+            
+            setSelectedElement(element) {
+                if (this.selectedElement) {
+                    this.selectedElement.classList.remove('selected');
+                }
+                
+                this.selectedElement = element;
+                
+                if (element) {
+                    element.classList.add('selected');
+                    this.updateSelectionBox();
+                    this.undoSystem.showStatus(`Selected: ${element.tagName}`);
+                } else {
+                    this.hideSelectionBox();
+                }
+            }
+            
+            updateSelectionBox() {
+                if (!this.selectedElement) return;
+                
+                const bounds = SVGUtils.getElementBounds(this.selectedElement);
+                if (!bounds) return;
+                
+                // This is a simplified version - you'd need proper positioning
+                // relative to the SVG container
+                this.undoSystem.showStatus(`Element at: ${Math.round(bounds.centerX)}, ${Math.round(bounds.centerY)}`);
+            }
+            
+            hideSelectionBox() {
+                // Hide selection indicator
+            }
+        }
+
+        // Global editing system
+        let svgEditingSystem = null;
+        let editingEnabled = false;
+
         function openInSvgEditor() {
             const svg = document.getElementById('visualization');
-            const svgString = new XMLSerializer().serializeToString(svg);
+            if (!svg) return;
             
-            // Encode SVG content for URL parameter
-            const encodedSvg = encodeURIComponent(svgString);
+            if (!editingEnabled) {
+                enableInlineEditing();
+            } else {
+                disableInlineEditing();
+            }
+        }
+        
+        function enableInlineEditing() {
+            const svg = document.getElementById('visualization');
+            const container = document.getElementById('visualization-container');
             
-            // Open editor in new window
-            const editorWindow = window.open(`svg-editor-inline.html?svg=${encodedSvg}`, 'svgEditor', 'width=1400,height=900');
+            if (!svg || svgEditingSystem) return;
             
-            // Listen for messages from editor
-            window.addEventListener('message', function(e) {
-                if (e.data.type === 'svg-update' && e.data.svg) {
-                    // Update the current SVG with edited version
-                    const container = document.getElementById('visualization-container');
-                    const cropOverlay = document.getElementById('crop-overlay');
-                    container.innerHTML = e.data.svg;
-                    
-                    // Re-add the crop overlay
-                    container.appendChild(cropOverlay);
-                    
-                    // Show confirmation
-                    const msg = document.createElement('div');
-                    msg.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: #10b981;
-                        color: white;
-                        padding: 12px 24px;
-                        border-radius: 5px;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                        z-index: 10000;
-                    `;
-                    msg.textContent = 'SVG updated from editor!';
-                    document.body.appendChild(msg);
-                    
-                    setTimeout(() => msg.remove(), 3000);
+            editingEnabled = true;
+            
+            // Initialize editing system
+            const undoSystem = new UndoSystem(svg);
+            const dragHandler = new DragHandler(svg, undoSystem);
+            
+            svgEditingSystem = { undoSystem, dragHandler };
+            
+            // Add editing styles
+            const style = document.createElement('style');
+            style.id = 'svg-editing-styles';
+            style.textContent = `
+                .svg-element {
+                    cursor: pointer;
+                    transition: opacity 0.2s;
                 }
+                .svg-element:hover {
+                    opacity: 0.8;
+                }
+                .svg-element.selected {
+                    stroke: #3b82f6 !important;
+                    stroke-width: 2 !important;
+                    stroke-dasharray: 5,5;
+                    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+                }
+                .dragging {
+                    cursor: move !important;
+                    opacity: 0.7;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Set up interactions
+            rebuildSVGInteractions();
+            
+            // Update button
+            const editBtn = document.querySelector('button[onclick="openInSvgEditor()"]');
+            if (editBtn) {
+                editBtn.textContent = '✕ Exit Editor';
+                editBtn.style.background = '#dc2626';
+            }
+            
+            // Add editing controls
+            const editingControls = document.createElement('div');
+            editingControls.id = 'editing-controls';
+            editingControls.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: rgba(30, 41, 59, 0.95);
+                padding: 15px;
+                border-radius: 5px;
+                z-index: 1001;
+                color: white;
+                font-size: 12px;
+            `;
+            editingControls.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: bold;">Editing Mode Active</div>
+                <div>• Click elements to select</div>
+                <div>• Drag to move elements</div>
+                <div>• Ctrl+Z/Y for undo/redo</div>
+                <div style="margin-top: 10px;">
+                    <button onclick="svgEditingSystem.undoSystem.undo()" style="margin-right: 5px; padding: 4px 8px; font-size: 11px;">Undo</button>
+                    <button onclick="svgEditingSystem.undoSystem.redo()" style="padding: 4px 8px; font-size: 11px;">Redo</button>
+                </div>
+            `;
+            container.appendChild(editingControls);
+            
+            showEditingStatus('Editing enabled! Click elements to select and drag to move.');
+        }
+        
+        function disableInlineEditing() {
+            editingEnabled = false;
+            svgEditingSystem = null;
+            
+            // Remove editing styles
+            const style = document.getElementById('svg-editing-styles');
+            if (style) style.remove();
+            
+            // Remove editing controls
+            const controls = document.getElementById('editing-controls');
+            if (controls) controls.remove();
+            
+            // Clear selections
+            const svg = document.getElementById('visualization');
+            if (svg) {
+                const elements = svg.querySelectorAll('.selected');
+                elements.forEach(el => el.classList.remove('selected', 'svg-element'));
+            }
+            
+            // Update button
+            const editBtn = document.querySelector('button[onclick="openInSvgEditor()"]');
+            if (editBtn) {
+                editBtn.textContent = 'Edit in SVG Editor';
+                editBtn.style.background = '#8b5cf6';
+            }
+            
+            showEditingStatus('Editing disabled');
+        }
+        
+        function rebuildSVGInteractions() {
+            if (!svgEditingSystem) return;
+            
+            const svg = document.getElementById('visualization');
+            if (!svg) return;
+            
+            const elements = svg.querySelectorAll('rect, circle, ellipse, path, line, text, polygon');
+            
+            elements.forEach(element => {
+                element.classList.add('svg-element');
+                element.onclick = function(e) {
+                    e.stopPropagation();
+                    svgEditingSystem.dragHandler.setSelectedElement(element);
+                };
             });
+            
+            svg.onclick = function(e) {
+                if (e.target === svg) {
+                    svgEditingSystem.dragHandler.setSelectedElement(null);
+                }
+            };
+        }
+        
+        window.rebuildSVGInteractions = rebuildSVGInteractions;
+        
+        function showEditingStatus(message) {
+            const existingMessages = document.querySelectorAll('.editing-status-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'editing-status-message';
+            statusDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 10000;
+                max-width: 300px;
+                font-size: 14px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            `;
+            statusDiv.textContent = message;
+            document.body.appendChild(statusDiv);
+            
+            setTimeout(() => statusDiv.style.opacity = '1', 100);
+            setTimeout(() => {
+                statusDiv.style.opacity = '0';
+                setTimeout(() => statusDiv.remove(), 300);
+            }, 3000);
         }
         
         // Keyboard shortcut

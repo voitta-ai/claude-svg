@@ -6,12 +6,27 @@ import { ResourceManager } from "./resource-manager.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+export interface Component {
+  name: string;
+  type: string;
+  description?: string;
+}
+
+export interface Connection {
+  from: string;
+  to: string;
+  label?: string;
+}
+
 export interface DiagramParams {
   type: "aws" | "network" | "flowchart" | "architecture" | "database";
-  description: string;
+  description?: string;
+  components?: Component[];
+  connections?: Connection[];
   style: "minimal" | "detailed" | "dark" | "light" | "professional";
   width: number;
   height: number;
+  animations?: boolean;
 }
 
 export interface BannerParams {
@@ -39,7 +54,7 @@ export class SVGGenerator {
 
   async loadProjectGuidelines(): Promise<void> {
     try {
-      const contextUri = new URL("claude://context/");
+      const contextUri = new URL("claude://context");
       const contextResult = await this.resourceManager.readResource(contextUri);
       this.projectGuidelines = contextResult.contents[0].text;
     } catch (error) {
@@ -71,20 +86,21 @@ export class SVGGenerator {
   }
 
   private async createDiagramSVG(params: DiagramParams): Promise<string> {
-    const { type, description, style, width, height } = params;
+    const { type, description, style, width, height, animations = false } = params;
     
     // Generate SVG based on type and description
+    const desc = description || 'Diagram';
     switch (type) {
       case "aws":
-        return this.generateAWSDiagram(description, style, width, height);
+        return this.generateAWSDiagram(desc, style, width, height, animations);
       case "network":
-        return this.generateNetworkDiagram(description, style, width, height);
+        return this.generateNetworkDiagram(desc, style, width, height, animations);
       case "flowchart":
-        return this.generateFlowchart(description, style, width, height);
+        return this.generateFlowchart(desc, style, width, height, animations);
       case "architecture":
-        return this.generateArchitectureDiagram(description, style, width, height);
+        return this.generateArchitectureDiagram(params);
       case "database":
-        return this.generateDatabaseDiagram(description, style, width, height);
+        return this.generateDatabaseDiagram(desc, style, width, height, animations);
       default:
         throw new Error(`Unsupported diagram type: ${type}`);
     }
@@ -98,7 +114,7 @@ export class SVGGenerator {
     return this.createBannerSVGContent(params, dimensions);
   }
 
-  private generateAWSDiagram(description: string, style: string, width: number, height: number): string {
+  private generateAWSDiagram(description: string, style: string, width: number, height: number, animations: boolean = false): string {
     const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
     const textColor = style === "dark" ? "#ffffff" : "#1e293b";
     
@@ -141,10 +157,10 @@ export class SVGGenerator {
       
       <!-- Straight line connections following CLAUDE.md guidelines -->
       <line x1="290" y1="230" x2="320" y2="230" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)">
-        <animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>
+        ${animations ? '<animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>' : ''}
       </line>
       <line x1="460" y1="230" x2="490" y2="230" stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)">
-        <animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>
+        ${animations ? '<animate attributeName="stroke-dasharray" values="0,10;10,0" dur="1s" repeatCount="indefinite"/>' : ''}
       </line>
       
       <!-- Title with proper spacing -->
@@ -154,7 +170,7 @@ export class SVGGenerator {
     </svg>`;
   }
 
-  private generateNetworkDiagram(description: string, style: string, width: number, height: number): string {
+  private generateNetworkDiagram(description: string, style: string, width: number, height: number, animations: boolean = false): string {
     const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
     const textColor = style === "dark" ? "#ffffff" : "#1e293b";
     
@@ -181,7 +197,7 @@ export class SVGGenerator {
     </svg>`;
   }
 
-  private generateFlowchart(description: string, style: string, width: number, height: number): string {
+  private generateFlowchart(description: string, style: string, width: number, height: number, animations: boolean = false): string {
     const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
     const textColor = style === "dark" ? "#ffffff" : "#1e293b";
     
@@ -224,11 +240,130 @@ export class SVGGenerator {
     </svg>`;
   }
 
-  private generateArchitectureDiagram(description: string, style: string, width: number, height: number): string {
-    return this.generateAWSDiagram(description, style, width, height); // Reuse AWS template for architecture
+  private generateArchitectureDiagram(params: DiagramParams): string {
+    const { description, components, connections, style, width, height, animations = false } = params;
+    const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
+    const textColor = style === "dark" ? "#ffffff" : "#1e293b";
+    
+    // Use provided components or default fallback
+    const diagramComponents = components || [
+      { name: 'Service A', type: 'Service' },
+      { name: 'Service B', type: 'Service' },
+      { name: 'Database', type: 'Storage' }
+    ];
+    
+    let svg = `<svg id="visualization" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="serviceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6"/>
+          <stop offset="100%" style="stop-color:#1e40af"/>
+        </linearGradient>
+        <linearGradient id="daemonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#10b981"/>
+          <stop offset="100%" style="stop-color:#047857"/>
+        </linearGradient>
+        <linearGradient id="storageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f59e0b"/>
+          <stop offset="100%" style="stop-color:#d97706"/>
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+        </filter>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="${textColor}"/>
+        </marker>
+      </defs>
+      
+      <rect width="${width}" height="${height}" fill="${bgColor}"/>
+      
+      <!-- System boundary -->
+      <rect x="50" y="50" width="${width - 100}" height="${height - 100}" 
+            fill="none" stroke="${textColor}" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+      <text x="70" y="80" fill="${textColor}" font-size="16" font-weight="bold">
+        ${description || 'System Architecture'}
+      </text>
+      
+`;
+    
+    // Calculate layout grid
+    const componentSpacing = 180;
+    const rowHeight = 120;
+    const componentsPerRow = Math.min(4, Math.ceil(Math.sqrt(diagramComponents.length)));
+    
+    // Create a lookup for component positions
+    const componentPositions = new Map<string, {x: number, y: number}>();
+    
+    // Add components
+    diagramComponents.forEach((component, index) => {
+      const row = Math.floor(index / componentsPerRow);
+      const col = index % componentsPerRow;
+      const xPosition = 100 + (col * componentSpacing);
+      const yPosition = 150 + (row * (rowHeight + 50));
+      
+      componentPositions.set(component.name, { x: xPosition + 70, y: yPosition + 40 });
+      
+      const gradient = this.getComponentGradient(component.type);
+      
+      svg += `      <!-- ${component.name} -->
+      <rect x="${xPosition}" y="${yPosition}" width="140" height="80" fill="url(#${gradient})" rx="8" filter="url(#shadow)"/>
+      <text x="${xPosition + 70}" y="${yPosition + 35}" fill="white" font-size="12" text-anchor="middle">
+        ${this.wrapText(component.name, 12)}
+      </text>
+      <text x="${xPosition + 70}" y="${yPosition + 55}" fill="rgba(255,255,255,0.8)" font-size="10" text-anchor="middle">
+        ${component.type}
+      </text>
+      
+`;
+    });
+    
+    // Add connections if provided
+    if (connections && connections.length > 0) {
+      connections.forEach(connection => {
+        const fromPos = componentPositions.get(connection.from);
+        const toPos = componentPositions.get(connection.to);
+        
+        if (fromPos && toPos) {
+          svg += `      <line x1="${fromPos.x}" y1="${fromPos.y}" x2="${toPos.x}" y2="${toPos.y}" 
+            stroke="${textColor}" stroke-width="2" marker-end="url(#arrowhead)">
+        ${animations ? '<animate attributeName="stroke-dasharray" values="0,10;10,0" dur="2s" repeatCount="indefinite"/>' : ''}
+      </line>
+      `;
+          
+          if (connection.label) {
+            const midX = (fromPos.x + toPos.x) / 2;
+            const midY = (fromPos.y + toPos.y) / 2;
+            svg += `      <text x="${midX}" y="${midY - 5}" fill="${textColor}" font-size="10" text-anchor="middle">
+        ${connection.label}
+      </text>
+      `;
+          }
+        }
+      });
+    }
+    
+    svg += `      <!-- Title -->
+      <text x="${width / 2}" y="30" fill="${textColor}" font-size="20" font-weight="bold" text-anchor="middle">
+        ${description || 'Architecture Diagram'}
+      </text>
+    </svg>`;
+    
+    return svg;
+  }
+  
+  private getComponentGradient(type: string): string {
+    if (type.includes('Consumer') || type.includes('Daemon')) return 'daemonGradient';
+    if (type.includes('Storage') || type.includes('Cache') || type.includes('Queue')) return 'storageGradient';
+    return 'serviceGradient';
+  }
+  
+  private wrapText(text: string, maxLength: number): string {
+    if (text.length <= maxLength) return text;
+    const words = text.split(' ');
+    if (words.length === 1) return text.substring(0, maxLength - 3) + '...';
+    return words[0];
   }
 
-  private generateDatabaseDiagram(description: string, style: string, width: number, height: number): string {
+  private generateDatabaseDiagram(description: string, style: string, width: number, height: number, animations: boolean = false): string {
     const bgColor = style === "dark" ? "#0a0e27" : "#f8fafc";
     const textColor = style === "dark" ? "#ffffff" : "#1e293b";
     
